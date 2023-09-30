@@ -2,7 +2,7 @@ import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 
 const Search = () => {
   return (
-    <form className="flex flex-1" action="#" method="GET">
+    <form className="flex flex-1 bg-[#111827]" action="#" method="GET">
     <label htmlFor="search-field" className="sr-only">
       Search
     </label>
