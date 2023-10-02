@@ -2,21 +2,25 @@
 import Cookies from 'js-cookie';
 import { useState, useEffect } from 'react'
 import { PhotoIcon, PlusIcon } from '@heroicons/react/24/solid'
+import { createProduct } from '@/services/services.products/Services.products';
 
 export default function FormCreateProducts() {
   const [titulo, setTitulo] = useState("");
   const [contenido, setContenido] = useState("");
-  const [markdown, setMarkdown] = useState("");
   const [categoria, setCategoria] = useState("");
   const [previewImage, setPreviewImage] = useState("");
-  const [autor, setAutor] = useState("Emanuel");
+  const [estado, setEstado] = useState(true);
+  const [stock, setStock] = useState(1);
+  const [precio, setPrecio] = useState(20);
+  const [descripcion, setDescripcion] = useState("pruebaaaaa")
+  const [file, setFile] = useState('')
 
   const handleCategoriaChange = (event) => {
     setCategoria(event.target.value);
   };
 
   const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
+    const selectedFile = e.target.files[0]
 
     if (!selectedFile) {
       console.log("Selecciona un archivo.");
@@ -41,13 +45,14 @@ export default function FormCreateProducts() {
       return;
     }
 
+    setFile(e.target.files[0])
+
     const reader = new FileReader();
     reader.onload = () => {
       setPreviewImage(reader.result);
     };
     reader.readAsDataURL(selectedFile);
   };
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -56,49 +61,20 @@ export default function FormCreateProducts() {
       titulo,
       contenido,
       categoria,
-      markdown,
+      estado,
+      stock,
+      precio,
+      descripcion,
       previewImage
-      , autor
     }
-    createPost(data);
+    createProduct(data, file)
   };
-
-  const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0N2RlYzUyZjg4ZDEyNDNmZTRhMDIwMSIsImlhdCI6MTY5NTgzODgwNiwiZXhwIjoxNjk1OTI1MjA2fQ.wJqDMYSO7gf-AUZDpYS3GMk71Rw7ByzleSyDYHQVxLU"
-
-
-  const createPost = async (data) => {
-    const formData = new FormData();
-    formData.append("titulo", data.titulo);
-    formData.append("contenido", data.contenido);
-    formData.append("markdown", data.markdown);
-    formData.append("autor", data.autor);
-    formData.append("categoria", data.categoria);
-    formData.append("imagen", data.previewImage);
-    try {
-      let response = await fetch(
-        "https://backend-blog-tau.vercel.app/api/create",
-        {
-          method: "POST",
-          headers: {
-            
-            "x-access-token": token,
-          },
-          body: formData,
-        }
-      );
-
-      response = await response.json();
-      console.log(response);
-    } catch (error) {
-      console.log(error);
-    }
-  }
 
   return (
     <form onSubmit={ handleSubmit } className='p-5 md:p-10 bg-gray-900 h-full'>
       <div className="space-y-12 ">
         <div className="border-b border-white/10 pb-12">
-          <h2 className="text-3xl font-semibold leading-7 text-white">Crear articulo</h2>
+          <h2 className="text-3xl font-semibold leading-7 text-white">Crear producto</h2>
           <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
             <div className="col-span-full mt-4">
               <label htmlFor="cover-photo" className="block text-sm font-medium leading-6 text-white">
@@ -131,7 +107,8 @@ export default function FormCreateProducts() {
 
                           <input
                             name="file"
-                            type="file"
+                            type="file" 
+                            accept="image/*"
                             id="fileInput"
                             onChange={ handleFileChange }
                           />
@@ -193,24 +170,6 @@ export default function FormCreateProducts() {
                   defaultValue={ '' }
                 />
               </div>
-              <p className="mt-3 text-sm leading-6 text-gray-400">Breve descripcion del articulo.</p>
-            </div>
-
-            <div className="col-span-full">
-              <label htmlFor="markdown" className="block text-sm font-medium leading-6 text-white">
-                Markdown
-              </label>
-              <div className="mt-2">
-                <textarea
-                  onChange={ (e) => setMarkdown(e.target.value) }
-                  id="markdown"
-                  name="markdown"
-                  rows={ 4 }
-                  className="block w-full rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm sm:leading-6"
-                  defaultValue={ '' }
-                />
-              </div>
-              <p className="mt-3 text-sm leading-6 text-gray-400">Contenido articulo markdown.</p>
             </div>
           </div>
         </div>
@@ -224,7 +183,7 @@ export default function FormCreateProducts() {
           type="submit"
           className="rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
         >
-          Crear articulo
+          Crear producto
         </button>
       </div>
     </form>
