@@ -12,7 +12,7 @@ const CreateProducts = () => {
   return (
     <main className="w-full">
       <Breadcrumbs pages={ pages } />
-      <FormCreateArticle />
+      <FormCreateArticle/>
     </main>
 
   )
