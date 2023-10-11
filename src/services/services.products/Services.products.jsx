@@ -10,7 +10,7 @@ export const createProduct = async (data, file) => {
   formData.append("imagen", file)
 
   const url_Local = "http://localhost:3000/api/"
-  const url_deploy = "https://api-store-sigma.vercel.app/api/" 
+  const url_deploy = "https://api-store-sigma.vercel.app/apia/" 
   const enpoint = "create_products";
 
   try {
@@ -20,7 +20,8 @@ export const createProduct = async (data, file) => {
     });
 
     const response = await res.json();
-    console.log(response);
+
+    return response
 
   } catch (error) {
     console.log(error);

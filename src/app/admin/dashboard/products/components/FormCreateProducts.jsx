@@ -1,8 +1,10 @@
 "use client"
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Switch } from '@headlessui/react'
 import { PhotoIcon, PlusIcon } from '@heroicons/react/24/solid'
 import { createProduct } from '@/services/services.products/Services.products';
+import Successfully from "@/components/notifications/Successfully"
+import Fail from '@/components/notifications/fail';
 
 
 function classNames(...classes) {
@@ -20,6 +22,9 @@ export default function FormCreateProducts() {
   const [descripcion, setDescripcion] = useState("pruebaaaaa")
   const [file, setFile] = useState('')
   const [descuento, setDescuento] = useState("")
+
+  const [notificationsSuccess, setNotificationsSuccess] = useState(false);
+  const [notificationFailure, setNotificationFailure] = useState(false);
 
 
   const handleCategoriaChange = (event) => {
@@ -74,12 +79,50 @@ export default function FormCreateProducts() {
       descripcion,
       previewImage
     }
-    createProduct(data, file)
-  };
 
+    try {
+      const response = await createProduct(data, file);
+      if (response) {
+        // Llamada exitosa
+        console.log('La petición fue exitosa.');
+        setNotificationsSuccess(true)
+
+        setTimeout(() => {
+          setNotificationsSuccess(false)
+        }, 800)
+
+      } else {
+        // Llamada fallida
+        console.log('Hubo un error en la petición.');
+
+        setNotificationFailure(true)
+
+        setTimeout(() => {
+          setNotificationFailure(false)
+        }, 1000)
+
+      }
+    } catch (error) {
+      console.log(error);
+
+      setNotificationFailure(true)
+
+      setTimeout(() => {
+        setNotificationFailure(false)
+      }, 1000)
+    }
+  };
 
   return (
     <main className='flex justify-center items-center  bg-gray-900 h-[100%] pl-5 md:pl-10 pr-5 md:pr-10 pt-3 pb-3'>
+      {
+        notificationsSuccess && <Successfully />
+      }
+
+      {
+        notificationFailure && <Fail />
+      }
+
       <form onSubmit={ handleSubmit } className='h-full  w-full flex  justify-between gap-14'>
         <div className='w-full flex flex-col gap-6'>
           <div className='flex flex-col gap-2'>
@@ -283,7 +326,7 @@ export default function FormCreateProducts() {
               <div className="mt-2">
                 <Switch
                   checked={ descuento }
-                  onChange={ setDescuento}
+                  onChange={ setDescuento }
                   className={ classNames(
                     descuento ? 'bg-indigo-600' : 'bg-gray-200',
                     'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2'
