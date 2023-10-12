@@ -10,7 +10,6 @@ export const createProduct = async (data, file) => {
   formData.append("imagen", file)
 
   const url_Local = "http://localhost:3000/api/"
-  const url_deploy = "https://api-store-sigma.vercel.app/apia/" 
   const enpoint = "create_products";
 
   try {
@@ -27,4 +26,25 @@ export const createProduct = async (data, file) => {
     console.log(error);
   }
 };
+
+
+export const deleteProduct = async (id) => {
+  const url_Local = "http://localhost:3000/api/"
+  const enpoint = "/delete_product/";
+
+  try {
+    const res = await fetch(`${url_Local}${enpoint}${id}`, {
+      method: "DELETE",
+    });
+
+    const response = await res.json();
+
+    console.log(response)
+    return response
+
+
+  } catch (error) {
+    console.log(error);
+  }
+}
 

@@ -1,11 +1,11 @@
 import { HeartIcon } from '@heroicons/react/24/outline'
 import { PencilIcon, PlusIcon, ExclamationTriangleIcon } from '@heroicons/react/20/solid'
+import { deleteProduct } from '@/services/services.products/Services.products'
 
 export default function SlideOvers({ data, edit }) {
-
   if (edit) {
     return (
-      <tbody className="h-full overflow-y-auto bg-white p-8">
+      <tbody className="h-full overflow-y-auto  p-8">
         <div className="text-base font-semibold leading-6 text-gray-900 pb-4 w-full flex justify-center">
           <h2>
             Editar
@@ -15,7 +15,7 @@ export default function SlideOvers({ data, edit }) {
           <div>
             <div className="aspect-h-7 aspect-w-2 block w-full overflow-hidden rounded-lg">
               <img
-                src="https://images.unsplash.com/photo-1582053433976-25c00369fc93?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=512&q=80"
+               src={ data.imagen.secure_url }
                 alt=""
                 className="object-cover"
               />
@@ -27,14 +27,7 @@ export default function SlideOvers({ data, edit }) {
                 </h2>
                 <p className="text-sm font-medium text-gray-500">3.9 MB</p>
               </div>
-              <button
-                type="button"
-                className="relative ml-4 flex h-8 w-8 items-center justify-center rounded-full bg-white text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              >
-                <span className="absolute -inset-1.5" />
-                <HeartIcon className="h-6 w-6" aria-hidden="true" />
-                <span className="sr-only">Favorite</span>
-              </button>
+
             </div>
           </div>
           <div>
@@ -45,12 +38,12 @@ export default function SlideOvers({ data, edit }) {
                 <dd className="text-gray-900">{ data.titulo }</dd>
               </div>
               <div className="flex justify-between py-3 text-sm font-medium">
-                <dt className="text-gray-500">Created</dt>
-                <dd className="text-gray-900">June 8, 2020</dd>
+                <dt className="text-gray-500">Categoria</dt>
+                <dd className="text-gray-900">{data.categoria}</dd>
               </div>
               <div className="flex justify-between py-3 text-sm font-medium">
-                <dt className="text-gray-500">Last modified</dt>
-                <dd className="text-gray-900">June 8, 2020</dd>
+                <dt className="text-gray-500">SKU</dt>
+                <dd className="text-gray-900">{data._id}</dd>
               </div>
               <div className="flex justify-between py-3 text-sm font-medium">
                 <dt className="text-gray-500">Dimensions</dt>
@@ -168,11 +161,12 @@ export default function SlideOvers({ data, edit }) {
           </div>
           <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
             <button
+            onClick={()=>{deleteProduct(data._id)}}
               type="button"
               className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
 
             >
-              Deactivate
+              Delete
             </button>
             <button
               type="button"

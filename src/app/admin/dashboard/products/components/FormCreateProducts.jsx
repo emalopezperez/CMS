@@ -1,7 +1,8 @@
 "use client"
 import { useState } from 'react'
+import { useRouter } from "next/navigation"
 import { Switch } from '@headlessui/react'
-import { PhotoIcon, PlusIcon } from '@heroicons/react/24/solid'
+import { PhotoIcon } from '@heroicons/react/24/solid'
 import { createProduct } from '@/services/services.products/Services.products';
 import Successfully from "@/components/notifications/Successfully"
 import Fail from '@/components/notifications/fail';
@@ -12,6 +13,8 @@ function classNames(...classes) {
 }
 
 export default function FormCreateProducts() {
+  const router = useRouter()
+
   const [titulo, setTitulo] = useState("");
   const [contenido, setContenido] = useState("");
   const [categoria, setCategoria] = useState("");
@@ -89,6 +92,7 @@ export default function FormCreateProducts() {
 
         setTimeout(() => {
           setNotificationsSuccess(false)
+          router.push("/admin/dashboard/products")
         }, 800)
 
       } else {

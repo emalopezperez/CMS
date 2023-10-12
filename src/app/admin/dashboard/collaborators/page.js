@@ -1,4 +1,4 @@
-import Table from "@/components/table/Table"
+import Table from "@/components/table/TableProducts"
 import Breadcrumbs from "@/components/breadcrumbs/Breadcrumbs"
 
 const data = [{
@@ -17,7 +17,7 @@ const Collaborators = () => {
   return (
     <div>
       <Breadcrumbs pages={ pages } />
-      <Table data={ data } title={ "Lista de colaboradores" } rutaCreate={ urlCreate } tableProduct={ false } />
+      
     </div>
 
   )

@@ -1,14 +1,25 @@
-import Table from "@/components/table/Table";
+import TableProducts from "@/components/table/TableProducts";
 import Breadcrumbs from "@/components/breadcrumbs/Breadcrumbs";
 
 
-export const getPosts = async () => {
-  const apiUrl = "https://backend-blog-tau.vercel.app/api/articles";
-  const res = await fetch(apiUrl, { cache: "no-store", });
 
-  const respuesta = await res.json();
-  return respuesta.items;
-};
+
+export const getProducts = async () => {
+  const url_Local = "http://localhost:3000/api/"
+  const enpoint = "list_products";
+  const apiUrl = "http://localhost:3000/api/list_products";
+
+  try {
+    const res = await fetch(apiUrl, { cache: "no-store", });
+
+    const response = await res.json();
+
+    return response.items
+
+  } catch (error) {
+    console.log(error);
+  }
+}
 
 
 const pages = [
@@ -17,15 +28,17 @@ const pages = [
 
 
 const Products = async () => {
-  const data = await getPosts();
+  const data = await getProducts();
   const urlCreate = "/admin/dashboard/products/create-products"
+
+
+  console.log(data);
 
   return (
     <div>
       <Breadcrumbs pages={ pages } />
-      <Table data={ data } title={ "Lista de productos" } rutaCreate={ urlCreate } tableProduct={ true } />
+      <TableProducts data={ data } title={ "Lista de productos" } rutaCreate={ urlCreate } tableProduct={ true } />
     </div>
-
   )
 }
 

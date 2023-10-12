@@ -2,15 +2,11 @@
 import { Fragment, useState } from 'react'
 import { Dialog, Transition, Menu } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
-import { EllipsisVerticalIcon } from '@heroicons/react/20/solid'
 import SlideOvers from "./SlideOvers"
 
-function classNames(...classes) {
-  return classes.filter(Boolean).join(' ')
-}
 
 const TbodyProducts = ({ article }) => {
-  const { titulo, _id, autor } = article
+  const { titulo, _id, imagen, categoria, precio, stock } = article
 
   const [edit, setEdit] = useState(true)
   const [open, setOpen] = useState(false)
@@ -29,14 +25,13 @@ const TbodyProducts = ({ article }) => {
   return (
     <tr key={ _id } className='h-full ' >
       <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-white sm:pl-0">
-        { titulo }
+        <img src={ imagen.secure_url } alt={ titulo } className='w-[80px] h-[120px]' />
       </td>
       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-300">{ titulo }</td>
-      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-300">{ autor }</td>
-      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-300">role</td>
-      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-300">{ titulo }</td>
-      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-300">{ autor }</td>
-      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-300">role</td>
+      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-300">{ categoria }</td>
+      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-300">{ _id }</td>
+      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-300">{ precio }</td>
+      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-300">{ stock }</td>
       <td className=" whitespace-nowrap px-3 py-4 text-sm text-gray-300 relative">
         <div className='flex justify-between w-[40%]'>
           <button onClick={ handleOnClickEdit }>
@@ -87,7 +82,7 @@ const TbodyProducts = ({ article }) => {
                             </div>
                           </div>
                         </div>
-                        <div className="relative mt-6 flex-1 px-4 sm:px-6">
+                        <div className="relative mt-6 flex-1 px-4 sm:px-6 ">
                           <SlideOvers data={ article } edit={ edit } />
                         </div>
                       </div>
