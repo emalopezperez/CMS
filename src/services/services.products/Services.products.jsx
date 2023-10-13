@@ -2,6 +2,7 @@ export const createProduct = async (data, file) => {
   const formData = new FormData();
   formData.append("titulo", data.titulo);
   formData.append("contenido", data.contenido);
+  formData.append("sub_categoria", data.sub_categoria);
   formData.append("categoria", data.categoria);
   formData.append("estado", data.estado);
   formData.append("stock", data.stock);

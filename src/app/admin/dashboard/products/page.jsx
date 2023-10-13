@@ -1,9 +1,6 @@
 import TableProducts from "@/components/table/TableProducts";
 import Breadcrumbs from "@/components/breadcrumbs/Breadcrumbs";
 
-
-
-
 export const getProducts = async () => {
   const url_Local = "http://localhost:3000/api/"
   const enpoint = "list_products";
@@ -11,7 +8,6 @@ export const getProducts = async () => {
 
   try {
     const res = await fetch(apiUrl, { cache: "no-store", });
-
     const response = await res.json();
 
     return response.items
@@ -21,19 +17,14 @@ export const getProducts = async () => {
   }
 }
 
-
 const pages = [
   { name: 'Productos', href: '/admin/dashboard/products', current: false },
 ]
 
-
 const Products = async () => {
   const data = await getProducts();
   const urlCreate = "/admin/dashboard/products/create-products"
-
-
-  console.log(data);
-
+  
   return (
     <div>
       <Breadcrumbs pages={ pages } />

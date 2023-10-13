@@ -5,8 +5,8 @@ import { Switch } from '@headlessui/react'
 import { PhotoIcon } from '@heroicons/react/24/solid'
 import { createProduct } from '@/services/services.products/Services.products';
 import Successfully from "@/components/notifications/Successfully"
+import { createSku } from '@/utilities/createSku'
 import Fail from '@/components/notifications/fail';
-
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
@@ -18,6 +18,7 @@ export default function FormCreateProducts() {
   const [titulo, setTitulo] = useState("");
   const [contenido, setContenido] = useState("");
   const [categoria, setCategoria] = useState("");
+  const [sub_categoria, setSubCategoria] = useState("");
   const [previewImage, setPreviewImage] = useState("");
   const [estado, setEstado] = useState(true);
   const [stock, setStock] = useState(1);
@@ -26,13 +27,27 @@ export default function FormCreateProducts() {
   const [file, setFile] = useState('')
   const [descuento, setDescuento] = useState("")
 
+  const [data, setData] = useState([]);
+  const [proveedor, setProveedor] = useState('');
+  const [variedad, setVariedad] = useState('');
+  const [tipoVariedad, setTipoVariedad] = useState('');
+  const [cantidad, setCantidad] = useState('');
+
   const [notificationsSuccess, setNotificationsSuccess] = useState(false);
   const [notificationFailure, setNotificationFailure] = useState(false);
-
 
   const handleCategoriaChange = (event) => {
     setCategoria(event.target.value);
   };
+
+  const handleSubCategoriaChange = (event) => {
+    setSubCategoria(event.target.value);
+  };
+
+  const handleTypeVariedad = (event) => {
+    setTipoVariedad(event.target.value);
+  };
+
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0]
@@ -76,17 +91,17 @@ export default function FormCreateProducts() {
       titulo,
       contenido,
       categoria,
+      sub_categoria,
       estado,
       stock,
       precio,
       descripcion,
-      previewImage
+      previewImage,
     }
 
     try {
       const response = await createProduct(data, file);
       if (response) {
-        // Llamada exitosa
         console.log('La petición fue exitosa.');
         setNotificationsSuccess(true)
 
@@ -96,7 +111,6 @@ export default function FormCreateProducts() {
         }, 800)
 
       } else {
-        // Llamada fallida
         console.log('Hubo un error en la petición.');
 
         setNotificationFailure(true)
@@ -117,18 +131,85 @@ export default function FormCreateProducts() {
     }
   };
 
+
+  const handleAddVariedad = (e) => {
+    e.preventDefault();
+
+    const sku = createSku(proveedor, variedad, titulo);
+
+    const nuevaVariedad = {
+      proveedor,
+      variedad,
+      tipo_variedad: tipoVariedad,
+      cantidad,
+      sku
+    };
+
+    setData([...data, nuevaVariedad]);
+
+    setProveedor('');
+    setVariedad('');
+    setCantidad('');
+  };
+
+
+  const deleteVariedad = (sku) => {
+    const newdata = data.filter(variedad => variedad.sku !== sku)
+    setData(newdata)
+  }
+
+
   return (
     <main className='flex justify-center items-center  bg-gray-900 h-[100%] pl-5 md:pl-10 pr-5 md:pr-10 pt-3 pb-3'>
-      {
-        notificationsSuccess && <Successfully />
-      }
+      { notificationsSuccess && <Successfully /> }
+      { notificationFailure && <Fail /> }
 
-      {
-        notificationFailure && <Fail />
-      }
+      <div className='flex gap-14 w-full h-full'>
+        <form onSubmit={ handleSubmit } className='flex flex-col h-full  w-[90%] gap-6'>
+          <div>
+            <label htmlFor="cover-photo" className="block text-sm font-medium leading-6 text-white">
+              Portada
+            </label>
+            <div className="mt-2 flex relative justify-center rounded-lg border border-dashed border-white/25 px-6 py-5  flex-col gap-4 items-center">
 
-      <form onSubmit={ handleSubmit } className='h-full  w-full flex  justify-between gap-14'>
-        <div className='w-full flex flex-col gap-6'>
+              {
+                previewImage && <div className='w-full flex flex-rigth'>
+                  <button
+                    onClick={ () => setPreviewImage("") }
+                    type="button"
+                    className="rounded-full absolute z-40 top-1 left-1  bg-black  text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 w-6 h-6 flex items-center justify-center"
+                  >
+                    <span className='text-sm '>
+                      x
+                    </span>
+                  </button>
+                </div>
+              }
+              {
+                previewImage ? <div className='w-full relative h-[120px]'>
+                  <img src={ previewImage } className='w-full h-full object-cover' />
+                </div> :
+                  <div className="text-center">
+                    <PhotoIcon className="mx-auto h-12 w-12 text-gray-500" aria-hidden="true" />
+                    <div className="mt-4 flex text-sm leading-6 text-gray-400">
+                      <label
+                        htmlFor="file"
+                        className="relative cursor-pointer rounded-md font-semibold text-white focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 focus-within:ring-offset-gray-900 hover:text-indigo-500"
+                      >
+
+                        <input
+                          name="file"
+                          type="file"
+                          accept="image/*"
+                          id="fileInput"
+                          onChange={ handleFileChange }
+                        />
+                      </label>
+                    </div>
+                  </div>
+              }
+            </div>
+          </div>
           <div className='flex flex-col gap-2'>
             <label htmlFor="titulo" className="block text-sm font-medium leading-6 text-white">
               Titulo
@@ -197,13 +278,33 @@ export default function FormCreateProducts() {
                 className="block w-full rounded-md border-0 bg-white/5 py-2.5 px-1 text-white shadow-sm ring-1 ring-inset ring-white/10 cursor-pointer sm:text-sm sm:leading-6 [&_*]:text-black"
               >
                 <option>Seleccionar valor</option>
-                <option>celulares</option>
-                <option>computadoras</option>
-                <option>audio</option>
+                <option>hombres</option>
+                <option>mujeres</option>
+                <option>articulos</option>
               </select>
             </div>
           </div>
 
+          <div className='flex flex-col gap-2'>
+            <label htmlFor="sub_categoria" className="block text-sm font-medium leading-6 text-white">
+              Subcategoria
+            </label>
+            <div className="mt-2">
+              <select
+                value={ sub_categoria }
+                onChange={ handleSubCategoriaChange }
+                id="sub_categoria"
+                name="sub_categoria"
+                autoComplete="country-name"
+                className="block w-full rounded-md border-0 bg-white/5 py-2.5 px-1 text-white shadow-sm ring-1 ring-inset ring-white/10 cursor-pointer sm:text-sm sm:leading-6 [&_*]:text-black"
+              >
+                <option>Seleccionar valor</option>
+                <option>jeans</option>
+                <option>remeras</option>
+                <option>zapatos</option>
+              </select>
+            </div>
+          </div>
 
           <div className='flex flex-col gap-2'>
             <label htmlFor="contenido" className="block text-sm font-medium leading-6 text-white">
@@ -221,53 +322,6 @@ export default function FormCreateProducts() {
             </div>
           </div>
 
-        </div>
-
-        <div className="w-full flex flex-col justify-between pt-2 ">
-          <div>
-            <label htmlFor="cover-photo" className="block text-sm font-medium leading-6 text-white">
-              Portada
-            </label>
-            <div className="mt-2 flex relative justify-center rounded-lg border border-dashed border-white/25 px-6 py-5  flex-col gap-4 items-center">
-
-              {
-                previewImage && <div className='w-full flex flex-rigth'>
-                  <button
-                    onClick={ () => setPreviewImage("") }
-                    type="button"
-                    className="rounded-full absolute z-40 top-1 left-1  bg-black  text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 w-6 h-6 flex items-center justify-center"
-                  >
-                    <span className='text-sm '>
-                      x
-                    </span>
-                  </button>
-                </div>
-              }
-              {
-                previewImage ? <div className='w-full relative h-[120px]'>
-                  <img src={ previewImage } className='w-full h-full object-cover' />
-                </div> :
-                  <div className="text-center">
-                    <PhotoIcon className="mx-auto h-12 w-12 text-gray-500" aria-hidden="true" />
-                    <div className="mt-4 flex text-sm leading-6 text-gray-400">
-                      <label
-                        htmlFor="file"
-                        className="relative cursor-pointer rounded-md font-semibold text-white focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 focus-within:ring-offset-gray-900 hover:text-indigo-500"
-                      >
-
-                        <input
-                          name="file"
-                          type="file"
-                          accept="image/*"
-                          id="fileInput"
-                          onChange={ handleFileChange }
-                        />
-                      </label>
-                    </div>
-                  </div>
-              }
-            </div>
-          </div>
 
           <div className='flex w-full justify-between'>
             <div className='flex flex-col gap-2'>
@@ -377,19 +431,148 @@ export default function FormCreateProducts() {
             </div>
           </div>
 
-          <div className=" items-center  gap-x-6 mt-28 w-full flex">
-            <button type="button" className="text-sm font-semibold leading-6 text-white">
-              Cancel
-            </button>
+          <div className='flex gap-4'>
             <button
-              type="submit"
+              type="onClick"
               className="rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
             >
               Crear producto
             </button>
           </div>
+        </form>
+
+
+        <div className="w-[80%]">
+          <form onSubmit={ handleAddVariedad } className="w-full flex flex-col gap-8 pt-2">
+            <h3 className="block text-md font-medium leading-6 text-white pb-5">Variedades del producto</h3>
+
+            <div className="flex justify-between gap-4">
+              <div className="flex flex-col gap-2 w-full">
+                <label className="block text-sm font-medium leading-6 text-white">Nombre del proveedor</label>
+                <div className="mt-2">
+                  <div className="flex bg-white/5 ring-1 ring-inset ring-white/10">
+                    <input
+                      type="text"
+                      className="flex-1 border-0 bg-transparent py-1.5 pl-1 text-white focus:ring-0 sm:text-sm sm:leading-6"
+                      placeholder="Proveedor del producto"
+                      value={ proveedor }
+                      onChange={ (e) => setProveedor(e.target.value) }
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className='flex flex-col gap-2 w-[30%]' >
+                <label htmlFor="tipoVariedad" className="block text-sm font-medium leading-6 text-white">
+                  Tipo de variedad
+                </label>
+                <div className="mt-2">
+                  <select
+                    value={ tipoVariedad }
+                    onChange={ handleTypeVariedad }
+                    id="tipoVariedad"
+                    name="tipoVariedad"
+                    autoComplete="country-name"
+                    className="block w-full rounded-md border-0 bg-white/5 py-2.5 px-1 text-white shadow-sm ring-1 ring-inset ring-white/10 cursor-pointer sm:text-sm sm:leading-6 [&_*]:text-black"
+                  >
+                    <option>Seleccionar</option>
+                    <option>color</option>
+                    <option>talla</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-4">
+              <div className="flex flex-col gap-2">
+                <label className="block text-sm font-medium leading-6 text-white">Variedad</label>
+                <div className="mt-2">
+                  <div className="flex bg-white/5 ring-1 ring-inset ring-white/10">
+                    <input
+                      type="text"
+                      className="flex-1 border-0 bg-transparent py-1.5 pl-1 text-white focus:ring-0 sm:text-sm sm:leading-6"
+                      placeholder="Variedad del producto"
+                      value={ variedad }
+                      onChange={ (e) => setVariedad(e.target.value) }
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="block text-sm font-medium leading-6 text-white">Cantidad</label>
+                <div className="mt-2">
+                  <div className="flex bg-white/5 ring-1 ring-inset ring-white/10">
+                    <input
+                      type="number"
+                      className="flex-1 border-0 bg-transparent py-1.5 pl-1 text-white focus:ring-0 sm:text-sm sm:leading-6"
+                      placeholder="Cantidad del producto"
+                      value={ cantidad }
+                      onChange={ (e) => setCantidad(e.target.value) }
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label className="block text-sm font-medium leading-6 text-white">Agregar </label>
+                <div className="mt-2">
+                  <div className="flex bg-white/5 ring-1 ring-inset ring-white/10">
+                    <button
+                      type="onClick"
+                      className="rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+                    >
+                      Agregar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+
+          {
+            data.length > 0 && <>
+              <table className="min-w-full divide-y divide-gray-700 mt-14">
+                <thead className="">
+                  <tr>
+                    <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-white sm:pl-0">
+                      Proveedor
+                    </th>
+                    <th scope="col" className="px-3 py-3.5 text-left text-md font-semibold text-white">
+                      Variedad
+                    </th>
+                    <th scope="col" className="px-3 py-3.5 text-left text-md font-semibold text-white">
+                      Cantidad
+                    </th>
+                    <th scope="col" className="px-3 py-3.5 text-left text-md font-semibold text-white">
+                      Sku
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-800 w-full">
+                  { data.map(({ variedad, proveedor, cantidad, sku }) => (
+                    <tr key={ cantidad } className='h-full ' >
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-300">{ proveedor }</td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-300">{ variedad }</td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-300">{ cantidad }</td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-300">{ sku }</td>
+                      <td className=" whitespace-nowrap px-3 py-4 text-sm text-gray-300 relative">
+                        <div className='flex justify-between w-[40%]'>
+                          <button
+                            onClick={ () => deleteVariedad(sku) }
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={ 1.5 } stroke="currentColor" className="w-4 h-4 text-red-400 hover:text-red-900">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                            </svg>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  )) }
+                </tbody>
+              </table>
+            </>
+          }
         </div>
-      </form>
+      </div>
     </main>
   )
 }

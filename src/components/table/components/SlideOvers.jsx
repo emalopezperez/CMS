@@ -1,8 +1,51 @@
-import { HeartIcon } from '@heroicons/react/24/outline'
+import { useState } from 'react';
 import { PencilIcon, PlusIcon, ExclamationTriangleIcon } from '@heroicons/react/20/solid'
 import { deleteProduct } from '@/services/services.products/Services.products'
+import { useRouter } from "next/navigation"
+import Successfully from '@/components/notifications/Successfully';
 
 export default function SlideOvers({ data, edit }) {
+  const router = useRouter();
+
+  const [notificationsSuccess, setNotificationsSuccess] = useState(false);
+  const [notificationFailure, setNotificationFailure] = useState(false);
+
+  const handleDelete = async () => {
+    try {
+      const response = await deleteProduct(data._id)
+      if (response) {
+        // Llamada exitosa
+        console.log('La petición fue exitosa.');
+        setNotificationsSuccess(true)
+
+        setTimeout(() => {
+          setNotificationsSuccess(false)
+          router.push("/admin/dashboard/products")
+        }, 800)
+
+      } else {
+        // Llamada fallida
+        console.log('Hubo un error en la petición.');
+
+        setNotificationFailure(true)
+
+        setTimeout(() => {
+          setNotificationFailure(false)
+        }, 1000)
+
+      }
+    } catch (error) {
+      console.log(error);
+
+      setNotificationFailure(true)
+
+      setTimeout(() => {
+        setNotificationFailure(false)
+      }, 1000)
+    }
+  };
+
+  
   if (edit) {
     return (
       <tbody className="h-full overflow-y-auto  p-8">
@@ -15,7 +58,7 @@ export default function SlideOvers({ data, edit }) {
           <div>
             <div className="aspect-h-7 aspect-w-2 block w-full overflow-hidden rounded-lg">
               <img
-               src={ data.imagen.secure_url }
+                src={ data.imagen.secure_url }
                 alt=""
                 className="object-cover"
               />
@@ -39,11 +82,11 @@ export default function SlideOvers({ data, edit }) {
               </div>
               <div className="flex justify-between py-3 text-sm font-medium">
                 <dt className="text-gray-500">Categoria</dt>
-                <dd className="text-gray-900">{data.categoria}</dd>
+                <dd className="text-gray-900">{ data.categoria }</dd>
               </div>
               <div className="flex justify-between py-3 text-sm font-medium">
                 <dt className="text-gray-500">SKU</dt>
-                <dd className="text-gray-900">{data._id}</dd>
+                <dd className="text-gray-900">{ data._id }</dd>
               </div>
               <div className="flex justify-between py-3 text-sm font-medium">
                 <dt className="text-gray-500">Dimensions</dt>
@@ -153,7 +196,7 @@ export default function SlideOvers({ data, edit }) {
                 <div className="mt-2">
                   <p className="text-sm text-gray-500">
                     Are you sure you want to deactivate your account? All of your data will be permanently
-                    removed. This action cannot be undone. Desactivando {data.titulo} 
+                    removed. This action cannot be undone. Desactivando { data.titulo }
                   </p>
                 </div>
               </div>
@@ -161,7 +204,7 @@ export default function SlideOvers({ data, edit }) {
           </div>
           <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
             <button
-            onClick={()=>{deleteProduct(data._id)}}
+              onClick={ handleDelete }
               type="button"
               className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
 
@@ -171,7 +214,6 @@ export default function SlideOvers({ data, edit }) {
             <button
               type="button"
               className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
-
             >
               Cancel
             </button>
